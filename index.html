@@ -338,6 +338,10 @@ function buildDBFromCSV(rows) {
 
 function getSheetCSVUrl() {
   const id = MMR_CONFIG.GOOGLE_SHEET_ID;
+  // Published sheets (2PACX- IDs) use /d/e/ URL format
+  if (id.startsWith('2PACX-')) {
+    return 'https://docs.google.com/spreadsheets/d/e/' + id + '/pub?output=csv';
+  }
   const sheet = encodeURIComponent(MMR_CONFIG.SHEET_NAME || 'Sheet1');
   return 'https://docs.google.com/spreadsheets/d/' + id + '/gviz/tq?tqx=out:csv&sheet=' + sheet;
 }
@@ -410,6 +414,13 @@ async function loadData() {
 }
 
 function initDashboard() {
+  // Initialize globals from loaded DB
+  ALL_DATES = DB.dates;
+  WEEK_META = DB.weekMeta;
+  MONTHLY = DB.monthly;
+  SERIES = DB.series;
+  GRADES = DB.grades;
+  STATES = DB.states;
   populateWeekDropdowns();
   populateMonthDropdown();
   populateSelects();
@@ -578,7 +589,8 @@ window.addEventListener('DOMContentLoaded', loadData);
 
 <script>
 // ══ DASHBOARD RENDERING ═════════════════════════════════════
-const ALL_DATES=DB.dates,WEEK_META=DB.weekMeta,MONTHLY=DB.monthly,SERIES=DB.series,GRADES=DB.grades,STATES=DB.states;
+// These are initialized lazily in initDashboard() after DB loads
+let ALL_DATES,WEEK_META,MONTHLY,SERIES,GRADES,STATES;
 const COLORS=['#1a56db','#e05b2e','#057a55','#9333ea','#d97706','#0891b2','#be185d','#374151','#7c3aed','#059669'];
 let sortK='curr',sortD=-1,tChart=null;
 
