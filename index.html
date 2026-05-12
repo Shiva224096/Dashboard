@@ -356,7 +356,8 @@ function loadFromCache() {
     if (!raw) return null;
     const cached = JSON.parse(raw);
     const age = (Date.now() - cached.timestamp) / 60000;
-    if (age > (MMR_CONFIG.CACHE_MINUTES || 30)) return null;
+    const cacheDuration = MMR_CONFIG.CACHE_MINUTES !== undefined ? MMR_CONFIG.CACHE_MINUTES : 30;
+    if (age >= cacheDuration) return null;
     return cached.data;
   } catch (e) { return null; }
 }
