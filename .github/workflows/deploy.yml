@@ -1,0 +1,26 @@
+name: Deploy MMR Dashboard
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 5'  # Every Friday 6 AM UTC
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject Google Sheet ID into config.js
+        run: |
+          sed -i "s|YOUR_GOOGLE_SHEET_ID_HERE|${{ vars.GOOGLE_SHEET_ID }}|g" config.js
+          echo "Config updated with Sheet ID"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          exclude_assets: '*.py,*.xlsx,_*.txt'
